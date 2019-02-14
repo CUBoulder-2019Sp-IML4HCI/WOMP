@@ -28,7 +28,10 @@ count = 0
 
 
 def proc_data(data):
-    osc_client.send_message("/wek/inputs", data)
+    data_float = [float(i) for i in data]
+    # print(data)
+    # print(data_float)
+    osc_client.send_message("/wek/inputs", data_float)
 
 # quat is a 4-tuple
 # acc is a 3-tuple
