@@ -219,6 +219,8 @@ class Myo(object):
         quat = tuple(map(lambda x: x / ORIENTATION_SCALE, quat))
         acc = tuple(map(lambda x: x / ACCELEROMETER_SCALE, acc))
         gyro = tuple(map(lambda x: x / GYROSCOPE_SCALE, gyro))
+        emg1 = tuple(map(lambda x: x / 127.0, emg1))
+        emg2 = tuple(map(lambda x: x / 127.0, emg2))
         for h in self.data_handlers:
             h(emg1+emg2+quat+acc+gyro)
 
