@@ -11,6 +11,7 @@ from .bluetooth import *
 from .myohw import *
 from .utils import *
 import time
+from collections import defaultdict
 
 
 def discover_myos(adapter):
@@ -60,7 +61,7 @@ class Myo(object):
             self.bt = BT(tty, baudrate=115200)
         else:
             self.bt = adapter
-        self.data_to_send = {}
+        self.data_to_send = defaultdict(list)
 
     def run(self):
         """ Receive BLE packets. Run this command in a loop to receive data. """
@@ -123,12 +124,13 @@ class Myo(object):
         c, attr, typ = struct.unpack('<BHB', p.payload[:4])
         pay = p.payload[5:] # chop off the first five bytes of the payload for some reason.
         # Read notification handles corresponding to the for EMG characteristics
+        
         if attr in MYO_EMG_CHARACTERISTICS:
-            self.data_to_send['emg'] = pay
+            self.data_to_send['emg'].append(pay)
             self.on_emg(pay)
         # Read IMU characteristic handle
         elif attr == MyoChars.IMUDataCharacteristic.value:
-            self.data_to_send['imu'] = pay
+            self.data_to_send['imu'].append(pay)
             self.on_imu(pay)
         # Read classifier characteristic handle
         elif attr == MyoChars.ClassifierCharacteristic.value:
@@ -139,8 +141,10 @@ class Myo(object):
         else:
             print('data with unknown attr: %02X %s' % (attr, p))
 
-        if 'emg' in self.data_to_send and 'imu' in self.data_to_send:
-            self.on_data(self.data_to_send['emg'],self.data_to_send['imu'])
+        if len(self.data_to_send['emg']) >= 4 and len(self.data_to_send['imu']) >= 2:
+            self.on_data(self.data_to_send['emg'][-4:],self.data_to_send['imu'][-2:])
+            del self.data_to_send['imu']
+            del self.data_to_send['emg']
 
     def write_attr(self, attr, val):
         if self.conn is not None:
@@ -213,16 +217,27 @@ class Myo(object):
     def add_data_handler(self,h):
         self.data_handlers.append(h)
 
-    def on_data(self,emg,imu):
-        emg1,emg2 = emg_data(emg)
-        quat, acc, gyro = imu_data(imu)
-        quat = tuple(map(lambda x: x / ORIENTATION_SCALE, quat))
-        acc = tuple(map(lambda x: x / ACCELEROMETER_SCALE, acc))
-        gyro = tuple(map(lambda x: x / GYROSCOPE_SCALE, gyro))
-        emg1 = tuple(map(lambda x: x / 127.0, emg1))
-        emg2 = tuple(map(lambda x: x / 127.0, emg2))
+    def on_data(self,emg_lst,imu_lst):
+        emg = []
+        for i in emg_lst:
+            tmp0, tmp1 = emg_data(i)
+            tmp0 = list(map(lambda x: x / 127.0, tmp0))
+            tmp1 = list(map(lambda x: x / 127.0, tmp1))
+            emg+=tmp0
+            emg+=tmp1
+        # print(emg)
+        # print(len(emg))
+        quat = []
+        acc = []
+        gyro = []
+        for imu in imu_lst:
+            quat1, acc1, gyro1 = imu_data(imu)
+            quat+=list(map(lambda x: x / ORIENTATION_SCALE, quat1))
+            acc+=list(map(lambda x: x / ACCELEROMETER_SCALE, acc1))
+            gyro+=list(map(lambda x: x / GYROSCOPE_SCALE, gyro1))
+        
         for h in self.data_handlers:
-            h(emg1+emg2+quat+acc+gyro)
+            h(emg+quat+acc+gyro)
 
     def on_emg(self, emg_input_data):
         """ Sends EMG data on to any registered handler function.
@@ -265,5 +280,6 @@ class Myo(object):
     def on_battery(self, battery_level_data):
         """ Sends battery level on to any registered handler function. """
         level = ord(battery_level_data)
+        print(level)
         for h in self.battery_handlers:
             h(level)
