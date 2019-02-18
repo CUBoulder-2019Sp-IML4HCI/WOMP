@@ -10,6 +10,7 @@ import sys
 from pythonosc import osc_message_builder
 from pythonosc import udp_client
 
+import numpy as np
 import time
 
 parser = argparse.ArgumentParser(description='Connects to a Myo, then sends EMG and IMU data as OSC messages to localhost:3000.')
@@ -19,24 +20,24 @@ parser.add_argument('-a', '--address', dest='address', help='A Myo MAC address t
 
 args = parser.parse_args()
 
-LOG_FILE = datetime.datetime.now().isoformat().replace(":", "-")[:19] + "-myo-to-osc.log"  # Log file name.
+LOG_FILE = "logs/"+datetime.datetime.now().isoformat().replace(":", "-")[:19] + "-myo-to-osc.log"  # Log file name.
 LOG_FORMAT = '%(message)s'
 
 osc_client = udp_client.SimpleUDPClient("127.0.0.1", 6448)  # OSC Client for sending messages.
 
 count = 0
-
-
+data_to_send = np.zeros((64,1))
 def proc_data(data):
     global count 
+    global data_to_send
     count += 1
-    data_float = [float(i) for i in data]
-    # print(data_float)
-    # print(len(data_float))
-    logging.info(data_float)
-    # if count%5==0:
-    osc_client.send_message("/wek/inputs", data_float)
-        # count = 0
+    # data_float = map(lambda x : float(x),data)
+    if args.logging:
+        # print(type(data),data)
+        logging.info(data)
+    if count %5 == 0:
+        osc_client.send_message("/wek/inputs", data)
+        count = 0
 
 # quat is a 4-tuple
 # acc is a 3-tuple

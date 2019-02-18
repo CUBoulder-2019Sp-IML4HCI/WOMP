@@ -218,26 +218,31 @@ class Myo(object):
         self.data_handlers.append(h)
 
     def on_data(self,emg_lst,imu_lst):
-        emg = []
+        max_emg = []
+        min_emg = []
+        average_emg = []
         for i in emg_lst:
             tmp0, tmp1 = emg_data(i)
-            tmp0 = list(map(lambda x: x / 127.0, tmp0))
-            tmp1 = list(map(lambda x: x / 127.0, tmp1))
-            emg+=tmp0
-            emg+=tmp1
-        # print(emg)
-        # print(len(emg))
+            tmp0 = list(map(lambda x: x / 127.0, tmp0)) 
+            tmp1 = list(map(lambda x: x / 127.0, tmp1)) #8 
+            max_emg.append(max(tmp0))
+            max_emg.append(max(tmp1))
+            min_emg.append(min(tmp0))
+            min_emg.append(min(tmp1))
+            average_emg.append(sum(tmp0)/len(tmp0))
+            average_emg.append(sum(tmp0)/len(tmp0))
+
         quat = []
         acc = []
         gyro = []
         for imu in imu_lst:
-            quat1, acc1, gyro1 = imu_data(imu)
+            quat1, acc1, gyro1 = imu_data(imu)  #4,3,3
             quat+=list(map(lambda x: x / ORIENTATION_SCALE, quat1))
             acc+=list(map(lambda x: x / ACCELEROMETER_SCALE, acc1))
             gyro+=list(map(lambda x: x / GYROSCOPE_SCALE, gyro1))
-        
+            
         for h in self.data_handlers:
-            h(emg+quat+acc+gyro)
+            h(max_emg+min_emg+average_emg)
 
     def on_emg(self, emg_input_data):
         """ Sends EMG data on to any registered handler function.
@@ -280,6 +285,5 @@ class Myo(object):
     def on_battery(self, battery_level_data):
         """ Sends battery level on to any registered handler function. """
         level = ord(battery_level_data)
-        print(level)
         for h in self.battery_handlers:
             h(level)
