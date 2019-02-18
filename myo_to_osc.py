@@ -26,7 +26,7 @@ LOG_FORMAT = '%(message)s'
 osc_client = udp_client.SimpleUDPClient("127.0.0.1", 6448)  # OSC Client for sending messages.
 
 count = 0
-data_to_send = np.zeros((64,1))
+data_to_send = np.zeros((48,))
 
 def feature_engineer(data):
     """
@@ -36,21 +36,22 @@ def feature_engineer(data):
     """
     #min,max,avg along y axis
     data = np.array(data,dtype=np.float32)
+    min_x,max_x,avg_x = data.min(axis=0),data.max(axis=0),np.mean(data,axis=0)
     min_y,max_y,avg_y = data.min(axis=1),data.max(axis=1),np.mean(data,axis=1)
-    arrays = [min_y,max_y,avg_y]
+    arrays = [min_x,max_x,avg_x,min_y,max_y,avg_y]
     data = np.stack(arrays).flatten()
-    return data.tolist()
+    return data
 
 def proc_data(data):
     global count 
     global data_to_send
     count += 1
-    data_to_send += feature_engineer(data)
+    data_to_send = np.add(data_to_send, feature_engineer(data))
     if args.logging:
         logging.info(data)
     if count %5 == 0:
         data_to_send = data_to_send / 5
-        osc_client.send_message("/wek/inputs", data_to_send)
+        osc_client.send_message("/wek/inputs", data_to_send.tolist())
         count = 0
 
 # quat is a 4-tuple
