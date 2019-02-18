@@ -42,11 +42,6 @@ def feature_engineer(data):
     data = np.stack(arrays).flatten()
     return data.tolist()
 
-def moving_average(a, n=3) :
-    ret = np.cumsum(a, dtype=float)
-    ret[n:] = ret[n:] - ret[:-n]
-    return ret[n - 1:] / n
-
 def proc_data(data):
     global count 
     global data_to_send
@@ -56,7 +51,7 @@ def proc_data(data):
         logging.info(data)
     if count %5 == 0:
         data_to_send = data_to_send / 5
-        osc_client.send_message("/wek/inputs", data_pre)
+        osc_client.send_message("/wek/inputs", data_to_send)
         count = 0
 
 # quat is a 4-tuple
