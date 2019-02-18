@@ -1,0 +1,21 @@
+{
+  "name": "gymmyo",
+  "version": "1.0.0",
+  "description": "visualizer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "gym",
+    "myo"
+  ],
+  "author": "Ashwin",
+  "license": "ISC",
+  "dependencies": {
+    "@recogizer/gauge-chart": "^0.4.3",
+    "express": "^4.10.2",
+    "node-osc": "^2.0.4",
+    "socket.io": "^1.7.2"
+  }
+}
