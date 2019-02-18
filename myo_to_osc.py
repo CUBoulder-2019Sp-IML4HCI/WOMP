@@ -45,7 +45,7 @@ def proc_data(data):
     global count 
     global data_to_send
     count += 1
-    data_to_send = feature_engineer(data)
+    data_to_send += feature_engineer(data)
     if args.logging:
         logging.info(data)
     if count %5 == 0:
