@@ -218,6 +218,7 @@ class Myo(object):
         self.data_handlers.append(h)
 
     def on_data(self,emg_lst,imu_lst):
+        emg = []
         max_emg = []
         min_emg = []
         average_emg = []
@@ -225,12 +226,14 @@ class Myo(object):
             tmp0, tmp1 = emg_data(i)
             tmp0 = list(map(lambda x: x / 127.0, tmp0)) 
             tmp1 = list(map(lambda x: x / 127.0, tmp1)) #8 
-            max_emg.append(max(tmp0))
-            max_emg.append(max(tmp1))
-            min_emg.append(min(tmp0))
-            min_emg.append(min(tmp1))
-            average_emg.append(sum(tmp0)/len(tmp0))
-            average_emg.append(sum(tmp0)/len(tmp0))
+            # max_emg.append(max(tmp0))
+            # max_emg.append(max(tmp1))
+            # min_emg.append(min(tmp0))
+            # min_emg.append(min(tmp1))
+            # average_emg.append(sum(tmp0)/len(tmp0))
+            # average_emg.append(sum(tmp0)/len(tmp0))
+            emg.append(tmp0)
+            emg.append(tmp1)
 
         quat = []
         acc = []
@@ -242,7 +245,7 @@ class Myo(object):
             gyro+=list(map(lambda x: x / GYROSCOPE_SCALE, gyro1))
             
         for h in self.data_handlers:
-            h(max_emg+min_emg+average_emg)
+            h(emg)
 
     def on_emg(self, emg_input_data):
         """ Sends EMG data on to any registered handler function.
