@@ -29,6 +29,7 @@ def discover_myos(adapter):
         uuid = p.payload[-16:]
         mac_address_string = mac_ints_to_string(mac_address)
         if uuid == MyoServiceInfoUuid:  # This is MYO_SERVICE_INFO_UUID # found a myo.
+            print(name)
             name = name.decode('utf-8')
             if name not in myo_details.keys():
                 print("Found a Myo:", name, "MAC:", mac_address_string)  # print the Myo's mac address

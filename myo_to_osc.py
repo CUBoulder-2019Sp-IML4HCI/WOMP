@@ -40,14 +40,13 @@ def feature_engineer(data):
     min_y,max_y,avg_y = data.min(axis=1),data.max(axis=1),np.mean(data,axis=1)
     arrays = [min_x,max_x,avg_x,min_y,max_y,avg_y]
     data = np.stack(arrays).flatten()
-    return data
+    return data.tolist()
 
 def proc_data(data):
     global count 
     global data_to_send
     count += 1
-    data_pre = list(feature_engineer(data))
-    print(data)
+    data_pre = feature_engineer(data)
     if args.logging:
         logging.info(data)
     if count %5 == 0:

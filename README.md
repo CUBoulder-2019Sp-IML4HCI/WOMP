@@ -1,3 +1,9 @@
+
+
+1. Feature engineering # 1
+Min, Max, Avg along x and y concatenated together. One packet: [48, 1]
+
+
 # Overview
 
 This project provides a bridge between the Thalmic Myo Armband and OSC connected applications such as Pd, SuperCollider, or Max/MSP. The code is purely Python designed to run in MacOS and Linux using the Myo bluetooth dongle.
