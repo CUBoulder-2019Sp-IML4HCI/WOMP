@@ -3,6 +3,9 @@
 1. Feature engineering # 1
 Min, Max, Avg along x and y concatenated together. One packet: [48, 1]
 
+2. Feature engineering # 2:
+Rolling average of pervious features are sent instead of just features
+
 
 # Overview
 
