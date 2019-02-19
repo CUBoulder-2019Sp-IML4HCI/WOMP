@@ -15,9 +15,8 @@
   </head>
 
   <body>
-    <h1>OSC Log</h1>
-    <canvas width=380 height=150 id="gaugeArea"></canvas>
-    <h2>HAHAHAHA</h2>
+    <h1>Weight range you are carrying</h1>
+    <canvas width=600 height=400 id="gaugeArea"></canvas>
     <ul id="messages"></ul>
   </body>
 
@@ -25,33 +24,52 @@
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/bernii/gauge.js/dist/gauge.js"></script>
 <script src="/socket.io/socket.io.js"></script>
+
 <script>
     
     var socket = io();
-
     let element = document.querySelector('#gaugeArea');
     let chartWidth = 400
     let needleValue = 20
-    let options = {
-        hasNeedle: true,
-        outerNeedle: true,
-        needleStartValue: 0,
-        arcColors: ["rgb(44,151,222)","lightgray"],
-        arcDelimiters: [80],
-        rangeLabel: ["0 KG","15 KG"],
-        centralLabel: "7.5 KG",
+    var options = {
+    angle: 0.15, // The span of the gauge arc
+    lineWidth: 0.44, // The line thickness
+    radiusScale: 1, // Relative radius
+    pointer: {
+      length: 0.82, // // Relative to gauge radius
+      strokeWidth: 0.06, // The thickness
+      color: '#000000' // Fill color
+    },
+    limitMax: false,     // If false, max value increases automatically if value > maxValue
+    limitMin: false,     // If true, the min value of the gauge will be fixed
+    colorStart: '#6FADCF',   // Colors
+    colorStop: '#8FC0DA',    // just experiment with them
+    strokeColor: '#E0E0E0',  // to see which ones work best for you
+    generateGradient: true,
+    highDpiSupport: true,     // High resolution support
+    // renderTicks is Optional
+    renderTicks: {
+      divisions: 1,
+      divWidth: 2.5,
+      divLength: 1,
+      divColor: '#333333',
+      subDivisions: 3,
+      subLength: 1,
+      subWidth: 0.9,
+      subColor: '#666666'
     }
-    
+  
+};
     var gauge = new Gauge(element).setOptions(options); // create sexy gauge!
-    gauge.maxValue = 3000;
+    gauge.maxValue = 1;
+    gauge.animationSpeed = 10;
     gauge.setMinValue(0);
-    gauge.set(2000);
-   
+    gauge.set(1);
 
     socket.on('osc', function(msg){
             $('#messages').append($('<li>').text(msg["address"]+": "+msg["payload"]));
                 console.log(msg);
-                gauge.set(msg.payload[0]*3000);
+                gauge.set(msg.payload[0]);
                 });
 </script>
 </script>
