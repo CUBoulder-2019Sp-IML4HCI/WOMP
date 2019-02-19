@@ -13,9 +13,17 @@
       #messages li:nth-child(odd) { background: #eee; }
     </style>
   </head>
+
+  <body>
+    <h1>OSC Log</h1>
+    <canvas width=380 height=150 id="gaugeArea"></canvas>
+    <h2>HAHAHAHA</h2>
+    <ul id="messages"></ul>
+  </body>
+
 <script src="https://cdn.rawgit.com/recogizer/gauge-chart/4a7d7f58/dist/bundle.js"></script> 
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
-
+<script src="https://cdn.jsdelivr.net/gh/bernii/gauge.js/dist/gauge.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script>
     
@@ -33,22 +41,19 @@
         rangeLabel: ["0 KG","15 KG"],
         centralLabel: "7.5 KG",
     }
-
-    GaugeChart.gaugeChart(element, 300, options)
-                .updateNeedle(50);
+    
+    var gauge = new Gauge(element).setOptions(options); // create sexy gauge!
+    gauge.maxValue = 3000;
+    gauge.setMinValue(0);
+    gauge.set(2000);
    
 
     socket.on('osc', function(msg){
             $('#messages').append($('<li>').text(msg["address"]+": "+msg["payload"]));
                 console.log(msg);
-                GaugeChart.gaugeChart(element, 300, options)
-                .updateNeedle(msg.payload[0]);
+                gauge.set(msg.payload[0]*3000);
                 });
 </script>
 </script>
-  <body>
-    <h1>OSC Log</h1>
-    <div id="gaugeArea"></div>
-    <ul id="messages"></ul>
-  </body>
+  
 </html>
