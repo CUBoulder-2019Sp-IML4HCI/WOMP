@@ -1,5 +1,5 @@
 var OSC_RECIEVE_PORT = 12000
-var OSC_RECIEVE_PORT = 12000
+var OSC_SEND_PORT = 6448
 var WS_PORT=4243
 
 var osc = require('node-osc');
@@ -8,6 +8,7 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+
 
 // var gauge = require('./gauge');
 
@@ -42,6 +43,8 @@ http.listen(WS_PORT, function(){
 });
 
 var oscServer = new osc.Server(OSC_RECIEVE_PORT, '0.0.0.0');
+
+
 console.log('listening for OSC packets on *:'+OSC_RECIEVE_PORT);
 
 
