@@ -1,4 +1,5 @@
 var OSC_RECIEVE_PORT = 12000
+var OSC_RECIEVE_PORT = 12000
 var WS_PORT=4243
 
 var osc = require('node-osc');
@@ -51,4 +52,5 @@ oscServer.on("message", function (msg, rinfo) {
             socket.emit("osc", {'address':msg[0], 'payload':msg.slice(1)});
       })
 });
+
 
