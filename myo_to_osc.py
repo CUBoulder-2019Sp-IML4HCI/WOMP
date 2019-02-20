@@ -49,7 +49,7 @@ def proc_data(data):
     count += 1
 
     data_to_send = np.add(data_to_send, feature_engineer(data))
-    
+    gith
     if args.logging:
         logging.info(data)
     if count %5 == 0:
