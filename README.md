@@ -51,7 +51,7 @@ We were not able to create an UI with trainable elements due to the time constra
 
 ## Acknowledgement:
 1. [myo-to-osc](https://github.com/cpmpercussion/myo-to-osc) : Used for sending myo signals to osc port
-2. [web-to-osc] : () : Used to visualize the myo output
+2. [web-to-osc]() : Used to visualize the myo output
 
 ## Requirements:
 1. node.js
