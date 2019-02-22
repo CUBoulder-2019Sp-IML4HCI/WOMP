@@ -15,8 +15,9 @@
   </head>
 
   <body>
-    <h1>Weight range you are carrying</h1>
-    <canvas width=600 height=400 id="gaugeArea"></canvas>
+    <center><h1>Weight range you are carrying</h1></center>
+    <center><canvas width=600 height=400 id="gaugeArea"></canvas></center>
+    <center><h1><div id="value"></div></h1></center>
     <ul id="messages"></ul>
   </body>
 
@@ -31,6 +32,7 @@
     let element = document.querySelector('#gaugeArea');
     let chartWidth = 400
     let needleValue = 20
+    
     var options = {
     angle: 0.15, // The span of the gauge arc
     lineWidth: 0.44, // The line thickness
@@ -40,13 +42,20 @@
       strokeWidth: 0.06, // The thickness
       color: '#000000' // Fill color
     },
-    limitMax: false,     // If false, max value increases automatically if value > maxValue
-    limitMin: false,     // If true, the min value of the gauge will be fixed
+    limitMax: true,     // If false, max value increases automatically if value > maxValue
+    limitMin: true,     // If true, the min value of the gauge will be fixed
     colorStart: '#6FADCF',   // Colors
     colorStop: '#8FC0DA',    // just experiment with them
     strokeColor: '#E0E0E0',  // to see which ones work best for you
     generateGradient: true,
     highDpiSupport: true,     // High resolution support
+    staticLabels: {
+      font: "10px sans-serif",  // Specifies font
+      labels: [5, 7.5, 12.5],  // Print labels at these values
+      color: "#000000",  // Optional: Label text color
+      fractionDigits: 0  // Optional: Numerical precision. 0=round off.
+    },
+    
     // renderTicks is Optional
     renderTicks: {
       divisions: 1,
@@ -61,15 +70,16 @@
   
 };
     var gauge = new Gauge(element).setOptions(options); // create sexy gauge!
-    gauge.maxValue = 1;
-    gauge.animationSpeed = 10;
+    gauge.maxValue = 15;
+    gauge.animationSpeed = 50;
     gauge.setMinValue(0);
     gauge.set(1);
 
     socket.on('osc', function(msg){
-            $('#messages').append($('<li>').text(msg["address"]+": "+msg["payload"]));
+            $('#messages').html($('<li>').text(msg["address"]+": "+msg["payload"]));
+            $("#value").html(msg['payload']/10);
                 console.log(msg);
-                gauge.set(msg.payload[0]);
+                gauge.set(msg.payload[0]/10);
                 });
 </script>
 </script>
